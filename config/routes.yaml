@@ -1,0 +1,3 @@
+index:
+    path: /{id}
+    controller: App\Controller\ProductController::detail
