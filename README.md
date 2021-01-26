@@ -4,7 +4,6 @@
 ![MariaDB](https://img.shields.io/badge/Database_Server-MariaDB_10.5-c0765a.svg)
 ![nginx](https://img.shields.io/badge/Webserver-nginx_1.19-009447.svg)
 ![Redis](https://img.shields.io/badge/Cache_Engine-Redis_6-D92A2A.svg)
-![Laravel ready!](https://img.shields.io/badge/Laravel-Ready_✔-e74430.svg)
 
 
 ## Basics
