@@ -1,12 +1,8 @@
 <?php
+
 namespace App\Drivers\SQL;
 
-
-interface IMySQLDriver {
-
-    /**
-     * @param string $id
-     * @return array
-     */
+interface IMySQLDriver
+{
     public function findProduct(string $id): array;
 }

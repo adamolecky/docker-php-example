@@ -4,7 +4,8 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
-
+    es_config: { 'hosts': [ 'http://elasticsearch:9200' ] }
+    indexDefinition: {'index': [ 'elastic']}
 services:
     # default configuration for services in *this* file
     _defaults:
@@ -26,6 +27,9 @@ services:
     App\Controller\:
         resource: '../src/Controller/'
         tags: ['controller.service_arguments']
+        arguments:
+            $indexDefinition: { 'index': [ 'elastic' ] }
+
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
@@ -34,3 +38,9 @@ services:
     App\Drivers\Elastic\IElasticSearchDriver: '@App\Drivers\Elastic\ElasticSearchDriver'
     App\Drivers\Elastic\MySQLDriver: ~
     App\Drivers\Elastic\IMySQLDriver: '@App\Drivers\Elastic\MySQLDriver'
+
+    Elasticsearch\ClientBuilder: ~
+
+    Elasticsearch\Client:
+        factory: [ '@Elasticsearch\ClientBuilder', fromConfig ]
+        arguments: [ '%es_config%' ]

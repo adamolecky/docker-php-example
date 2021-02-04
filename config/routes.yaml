@@ -1,7 +1,7 @@
 product_detail:
-    path: /{id}
+    path: /product/detail/{id}
     controller: App\Controller\ProductController::detail
 
-create_product:
+product_create:
     path: /product/create/{content}
-    controller: App\Controller\ProductController::createProduct
+    controller: App\Controller\ProductController::create

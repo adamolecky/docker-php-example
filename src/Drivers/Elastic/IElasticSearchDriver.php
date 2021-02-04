@@ -1,11 +1,8 @@
 <?php
+
 namespace App\Drivers\Elastic;
 
-interface IElasticSearchDriver {
-
-    /**
-     * @param string $id
-     * @return array
-     */
+interface IElasticSearchDriver
+{
     public function findById(string $id): array;
 }

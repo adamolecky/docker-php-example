@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Drivers\Elastic;
 
 use App\Exceptions\ElasticOutOffOrderException;
@@ -10,21 +11,20 @@ use App\Exceptions\ElasticOutOffOrderException;
 class ElasticSearchDriver implements IElasticSearchDriver
 {
     /**
-     * @param string $id
      * @return array|void
+     *
      * @throws ElasticOutOffOrderException
      */
     public function findById(string $id): array
     {
-        if(intval($id) === 1) {
+        if (1 === intval($id)) {
             return [
-                ["ElasticSource", "value1"],
-                ["key2", "value2"],
-                ["key3", "value3"],
+                ['ElasticSource', 'value1'],
+                ['key2', 'value2'],
+                ['key3', 'value3'],
             ];
         } else {
             throw new ElasticOutOffOrderException();
         }
     }
 }
-

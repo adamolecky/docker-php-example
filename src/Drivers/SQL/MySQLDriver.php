@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Drivers\SQL;
 
 use App\Exceptions\MySQLOutOffOrderException;
@@ -10,17 +11,17 @@ use App\Exceptions\MySQLOutOffOrderException;
 class MySQLDriver implements IMySQLDriver
 {
     /**
-     * @param string $id
      * @return string[][]
+     *
      * @throws MySQLOutOffOrderException
      */
     public function findProduct(string $id): array
     {
-        if(intval($id) === 2) {
+        if (2 === intval($id)) {
             return [
-                ["MysqlSource", "value1"],
-                ["key2", "value2"],
-                ["key3", "value3"],
+                ['MysqlSource', 'value1'],
+                ['key2', 'value2'],
+                ['key3', 'value3'],
             ];
         } else {
             throw new MySQLOutOffOrderException();
