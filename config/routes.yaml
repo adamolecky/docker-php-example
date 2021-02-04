@@ -1,3 +1,7 @@
-index:
+product_detail:
     path: /{id}
     controller: App\Controller\ProductController::detail
+
+create_product:
+    path: /product/create/{content}
+    controller: App\Controller\ProductController::createProduct

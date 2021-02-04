@@ -6,6 +6,7 @@ use App\Drivers\Elastic\IElasticSearchDriver;
 use App\Drivers\SQL\IMySQLDriver;
 use App\Exceptions\ElasticOutOffOrderException;
 use App\Exceptions\MySQLOutOffOrderException;
+use App\Repository\ProductRepository;
 use Psr\Cache\InvalidArgumentException;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,9 +25,9 @@ class ProductController extends AbstractController
     protected $elasticDriver;
 
     /**
-     * @var $sqlDriver IMySQLDriver
+     * @var $productRepository ProductRepository
      */
-    protected $sqlDriver;
+    protected $productRepository;
 
     /**
      * @var $cache TagAwareCacheInterface
@@ -40,12 +41,12 @@ class ProductController extends AbstractController
 
     public function __construct(
         IElasticSearchDriver $elasticSearchDriver,
-        IMySQLDriver $mySQLDriver,
+        ProductRepository $productRepository,
         TagAwareCacheInterface $cache,
         LoggerInterface $logger
     ){
         $this->elasticDriver = $elasticSearchDriver;
-        $this->sqlDriver = $mySQLDriver;
+        $this->productRepository = $productRepository;
         $this->cache = $cache;
         $this->logger = $logger;
     }
@@ -59,11 +60,26 @@ class ProductController extends AbstractController
     public function detail(string $id): JsonResponse
     {
         $response['data'] = $this->handleDBConnections($id);
-        if(sizeof($response['data'])) {
+        if($response && sizeof($response['data'])) {
             $response['count'] = $this->updateProductCounter($id);
         }
 
         return (new JsonResponse($response));
+    }
+
+    /**
+     * @Route("/product/create/{content}", name="create_product")
+     * @param string $content
+     * @return JsonResponse
+     */
+    public function createProduct(string $content): JsonResponse
+    {
+        //TODO: never ever do use this, you should clean content before inserting to DB, but this is only example.
+        $content = ['data' => $content];
+        $productArray = $this->productRepository->insertProduct($content);
+
+
+        return new JsonResponse($productArray);
     }
 
     /**
@@ -101,10 +117,13 @@ class ProductController extends AbstractController
                 $dbResults = $this->elasticDriver->findById($id);
             } catch (ElasticOutOffOrderException $e) {
                 try {
-                    $dbResults = $this->sqlDriver->findProduct($id);
+                    $dbResults = $this->productRepository->find($id);
                 } catch (MySQLOutOffOrderException $e) {
                     $this->logger->critical('Could not get data from DBs. Elastic, nor Mysql is working! Check DB status.');
                 }
+            }
+            if ($dbResults === null) {
+                $dbResults['error'] = 'No such key in db.';
             }
 
             $item->tag($id);
