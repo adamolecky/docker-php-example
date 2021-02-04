@@ -12,19 +12,24 @@ This repo contains basic docker images to run Symfony app. If you want to run th
 
 1. Download contents
 2. Go into a directory with docker-compose.yml
-3. Add .env file with at least `DATABASE_URL=` row
-4. Create folder ``Entity`` in ``./src`` (Complete path './src/Entity')
-5. Run ``docker-compose up`` in your terminal 
-6. Connect to php pod using ``docker-compose exec php bash``
-7. Install vendor using ``composer install`` in app folder
-8. Now you can access Symfony app on localhost.
+3. Add .env file with at least `DATABASE_URL=mysql://user:password@db:3306/database` row
+4. Run ``docker-compose up`` in your terminal 
+5. Connect to php pod using ``docker-compose exec php bash``
+6. Install vendor using ``composer install`` in app folder
+7. Now you can access Symfony app on localhost.
+8. Optional: you can fill elasticsearch by using command inside of php node: ``bin/console feed_elastic_products``
 
-Note: Be aware, that this is only <strong>mere example</strong> thus there is set only one path: 
+Note: Be aware, that this is only <strong>mere example</strong> thus there is set only this paths: 
 
-http://localhost/{id}
+http://localhost/product/create/{content}
 
-<strong>Working ids: 1, 2</strong>
+http://localhost/product/detail/{id}
 
-Also there is no connector to DB & Redis, but setting is really easy. 
+For simplicity and ease of use both URIs accepting GET requests. From default system example is 
+configured to cache responses for 3600s. Content could be anything, created entity is stored in both DBs.
+Id is last id incremented by one same in both DBs. Maybe this is not optimal solution,
+because there could be as switch in .env file (will be added later).   
+
+<strong>Working ids for elastic after 8th step: 1, 2, 3</strong>
 
 Thank you for feedback.
