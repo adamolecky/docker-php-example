@@ -18,20 +18,23 @@ class FeedElasticProductsCommand extends Command
     /**
      * @var Client
      */
-    private $client;
+    private Client $client;
 
     /**
      * @var string
      */
-    private $productFilePath;
+    private string $productFilePath;
 
     /**
      * @var array
      */
-    private $indexDefinition;
+    private array $indexDefinition;
 
     /**
      * FeedProductsCommand constructor.
+     * @param Client $client
+     * @param string $productFilePath
+     * @param array $indexDefinition
      */
     public function __construct(Client $client, string $productFilePath = '/app/data/products.csv', array $indexDefinition = ['index' => 'elastic'])
     {
@@ -73,7 +76,7 @@ class FeedElasticProductsCommand extends Command
         $productFile->fgetcsv(); //ignore headline
 
         while ($data = $productFile->fgetcsv()) {
-            list($rowIdx, $content) = $data;
+            [$rowIdx, $content] = $data;
             $doc = array_merge(
                 $this->indexDefinition,
                 [
@@ -92,11 +95,11 @@ class FeedElasticProductsCommand extends Command
      */
     private function createIndex(): void
     {
-        if ($this->client->indices()->exists($this->indexDefinition)) {
+        if ($this?->client?->indices()?->exists($this->indexDefinition)) {
             $this->client->indices()->delete($this->indexDefinition);
         }
 
-        $this->client->indices()->create(
+        $this?->client?->indices()?->create(
             array_merge(
                 $this->indexDefinition,
                 [

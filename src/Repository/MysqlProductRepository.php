@@ -3,11 +3,13 @@
 namespace App\Repository;
 
 use App\Entity\Product;
+use App\Repository\Interfaces\ProductRepositoryInterface;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 use Doctrine\Persistence\ManagerRegistry;
 use Elasticsearch\Client;
+use JetBrains\PhpStorm\ArrayShape;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -16,28 +18,17 @@ use Psr\Log\LoggerInterface;
  * @method Product[]    findAll()
  * @method Product[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class ProductRepository extends ServiceEntityRepository
+class MysqlProductRepository extends ServiceEntityRepository implements ProductRepositoryInterface
 {
-    /**
-     * @var LoggerInterface
-     */
-    protected $logger;
-
-    /**
-     * @var Client
-     */
-    private $client;
-
     public function __construct(
         ManagerRegistry $registry,
-        LoggerInterface $logger,
-        Client $client
+        protected LoggerInterface $logger,
+        private Client $client
     ) {
         parent::__construct($registry, Product::class);
-        $this->logger = $logger;
-        $this->client = $client;
     }
 
+    #[ArrayShape(['saved' => "bool", 'product.content' => "array|null"])]
     public function insertProduct(array $content): array
     {
         $saved = true;
@@ -57,36 +48,14 @@ class ProductRepository extends ServiceEntityRepository
         return ['saved' => $saved, 'product.content' => $product->getContent()];
     }
 
-    public function mysqlFindById(string $id): string
+    #[ArrayShape(['saved' => "bool", 'product.content' => "array|null"])]
+    public function findById(string $id): array
     {
         $dbResults = $this->find($id);
         if ($dbResults) {
-            return json_encode(get_object_vars($dbResults));
+            $dbResults = json_encode(get_object_vars($dbResults));
+            return ['saved' => true, 'product.content' => "$dbResults"];
         }
-
-        return '';
-    }
-
-    public function elasticsearchFindById(string $id, array $indexDefinition): string
-    {
-        $result = $this->client->search(
-            array_merge(
-                $indexDefinition,
-                ['body' => [
-                    'query' => [
-                        'bool' => [
-                            'filter' => [
-                                'term' => [
-                                    '_id' => ['value' => "$id"],
-                                ],
-                            ],
-                        ],
-                    ],
-                ]]
-            ));
-
-        return array_map(function ($item) {
-            return $item['_source']['content'];
-        }, $result['hits']['hits']);
+        return ['saved' => false, 'product.content' => null];
     }
 }

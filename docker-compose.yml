@@ -20,7 +20,7 @@ services:
   # --- PHP 7.4
   php:
     container_name: "btq-project-php"
-    image: bitnami/php-fpm:7.4
+    image: bitnami/php-fpm:8.0
     depends_on:
       - db
       - redis
